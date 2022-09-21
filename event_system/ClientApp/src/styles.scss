@@ -1,0 +1,14 @@
+/* You can add global styles to this file, and also import other style files */
+
+/* Importing Bootstrap SCSS file. */
+// @import '~bootstrap/scss/bootstrap';
+html,
+body {
+  height: 100%;
+}
+.ng2-dropdown-menu--open {
+    z-index:9999!important;
+}
+.page-content {
+    flex: 1 0 auto;
+}

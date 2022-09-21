@@ -1,0 +1,149 @@
+<div class="container">
+    <h1>Guest Here</h1>
+    <a (click)="onDisplayCreateModal(createContent)" class="btn btn-success">Create New Guest</a>
+
+    <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>DOB</th>
+            <th>Allergies</th>
+            <th width="250px">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let guest of guests; let i=index;">
+            <td>{{ i+1 }}</td>
+            <td>{{guest.firstName + " " + guest.lastName}}</td>
+            <td>{{guest.email}}</td>
+            <td>{{ guest.dob | date }}</td>
+            <td><span *ngFor="let allergy of guest.allergies" class="badge bg-secondary m-1">{{ allergy.name }}</span></td>
+            <td>
+              <a (click)="onDisplayEditModal(editContent,  guest.id)" class="btn btn-primary">Edit</a>
+              <button type="button" (click)="deleteEvent(guest.id)" class="btn btn-danger">Delete</button>
+            </td>
+          </tr>
+        </tbody>
+    </table>
+</div>
+
+<ng-template #createContent let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title">Create Modal</h4>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+    </div>
+    <div class="modal-body">
+      <form novalidate autocomplete="off" #createForm="ngForm" (submit)="onSubmit()" class="container">
+        <div class="row">
+          <div class="form-group col-md-6 mt-4">
+            <label>First Name</label>
+            <input class="form-control" placeholder="First Name" name="firstName" #firstName="ngModel"
+                   [(ngModel)]="guest.firstName" required [class.invalid]="firstName.invalid && firstName.touched" />
+          </div>
+          <div class="form-group col-md-6 mt-4">
+            <label>Last Name</label>
+            <input class="form-control" placeholder="Last Name" name="lastName" #lastName="ngModel"
+                   [(ngModel)]="guest.lastName" required [class.invalid]="lastName.invalid && lastName.touched" />
+          </div>
+          <div class="form-group col-md-6 mt-4">
+            <label>Email</label>
+            <input class="form-control" placeholder="Email" name="email" #email="ngModel" [(ngModel)]="guest.email" required
+                   email [class.invalid]="email.invalid && email.touched" />
+          </div>
+          <div class="form-group col-md-6 mt-4">
+            <label>Date of Birth</label>
+            <div class="input-group">
+              <input class="form-control" placeholder="yyyy-mm-dd" name="dob" [(ngModel)]="dobModel" ngbDatepicker
+                     #dob="ngModel" #dobRef="ngbDatepicker" [startDate]="dobModel" [minDate]="{ year: 1950, month: 1, day: 1 }"
+                     [maxDate]="{ year: 2032, month: 12, day: 31 }" required maxlength="10" minlength="10"
+                     [class.invalid]="dob.status == 'INVALID'" />
+              <div class="input-group-append">
+                <button class="btn btn-outline-secondary calendar" (click)="dobRef.toggle()" type="button">
+                  <i class="fa fa-calendar"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="form-group mt-4">
+          <label>Allergies</label>
+          <tag-input name="allergies" [(ngModel)]="guest.allergies" identifyBy="name" displayBy="name">
+            <tag-input-dropdown [autocompleteItems]="allergies" identifyBy="name" displayBy="name"
+                                [showDropdownIfEmpty]="true" [dynamicUpdate]="false">
+            </tag-input-dropdown>
+          </tag-input>
+        </div>
+        <div class="form-row mt-4">
+          <button class="btn btn-primary m-1" type="submit" [disabled]="createForm.invalid">
+            Create
+          </button>
+          <button class="btn btn-secondary m-1" type="button" (click)="modal.close('Close click')">
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+</ng-template>
+
+<!-- ================= Edit Modal ==========================  -->
+<ng-template #editContent let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title">Edit Event</h4>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+    </div>
+    <div class="modal-body">
+      <form novalidate autocomplete="off" #editForm="ngForm" (submit)="onUpdate()" class="container">
+        <div class="row">
+          <div class="form-group col-md-6 mt-4">
+            <label>First Name</label>
+            <input class="form-control" placeholder="First Name" name="firstName" #firstName="ngModel"
+                   [(ngModel)]="guest.firstName" required [class.invalid]="firstName.invalid && firstName.touched" />
+          </div>
+          <div class="form-group col-md-6 mt-4">
+            <label>Last Name</label>
+            <input class="form-control" placeholder="Last Name" name="lastName" #lastName="ngModel"
+                   [(ngModel)]="guest.lastName" required [class.invalid]="lastName.invalid && lastName.touched" />
+          </div>
+          <div class="form-group col-md-6 mt-4">
+            <label>Email</label>
+            <input class="form-control" placeholder="Email" name="email" #email="ngModel" [(ngModel)]="guest.email" required
+                   email [class.invalid]="email.invalid && email.touched" />
+          </div>
+          <div class="form-group col-md-6 mt-4">
+            <label>Date of Birth</label>
+            <div class="input-group">
+              <input class="form-control" placeholder="yyyy-mm-dd" name="dob" [(ngModel)]="dobModel" ngbDatepicker
+                     #dob="ngModel" #dobRef="ngbDatepicker" [startDate]="dobModel" [minDate]="{ year: 1950, month: 1, day: 1 }"
+                     [maxDate]="{ year: 2032, month: 12, day: 31 }" required maxlength="10" minlength="10"
+                     [class.invalid]="dob.status == 'INVALID'" />
+              <div class="input-group-append">
+                <button class="btn btn-outline-secondary calendar" (click)="dobRef.toggle()" type="button">
+                  <i class="fa fa-calendar"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="form-group mt-4">
+          <label>Allergies</label>
+          <tag-input name="allergies" [(ngModel)]="guest.allergies" identifyBy="name" displayBy="name">
+            <tag-input-dropdown [autocompleteItems]="allergies" identifyBy="name" displayBy="name"
+                                [showDropdownIfEmpty]="true" [dynamicUpdate]="false">
+            </tag-input-dropdown>
+          </tag-input>
+        </div>
+        <div class="form-row mt-4">
+          <button class="btn btn-primary m-1" type="submit" [disabled]="editForm.invalid">
+            Update
+          </button>
+          <button class="btn btn-secondary m-1" type="button" (click)="modal.close('Close click')">
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+</ng-template>
+
+<!-- ===================== End Edit Modal ==============================  -->

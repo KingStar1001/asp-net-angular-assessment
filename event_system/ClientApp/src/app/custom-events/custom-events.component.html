@@ -1,0 +1,139 @@
+<div class="container">
+    <h1>Events Here</h1>
+    <a (click)="onDisplayCreateModal(createContent)" class="btn btn-success">Create New Event</a>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Date</th>
+                <th>Guests</th>
+                <th width="250px">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let _customEvent of customEvents; let i=index;">
+            <td>{{ i+1 }}</td>
+            <td>{{_customEvent.name}}</td>
+            <td>{{_customEvent.date | date}}</td>
+            <td>{{ _customEvent.guests?.length }} Guest(s)</td>
+            <td>
+              <a (click)="onDisplayEditModal(editContent, _customEvent.id)" class="btn btn-primary">Edit</a>
+              <button type="button" (click)="deleteEvent(_customEvent.id)" class="btn btn-danger">Delete</button>
+            </td>
+          </tr>
+        </tbody>
+    </table>
+</div>
+
+<!--  ========= createmodal part is here =================== -->
+<ng-template #createContent let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title">Create Event</h4>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+    </div>
+    <div class="modal-body">
+      <form novalidate autocomplete="off" #createForm="ngForm" (submit)="onSubmit()" class="container">
+        <div class="row">
+          <div class="form-group col-md-6 mt-4">
+            <label>Name</label>
+            <input class="form-control" placeholder="Name" name="name" #name="ngModel" [(ngModel)]="event.name" required
+                   [class.invalid]="name.invalid && name.touched" />
+          </div>
+          <div class="form-group col-md-6 mt-4">
+            <label>Date</label>
+            <div class="input-group">
+              <input class="form-control" placeholder="yyyy-mm-dd" name="date" [(ngModel)]="dobModel" ngbDatepicker
+                     #date="ngModel" #dateRef="ngbDatepicker" [startDate]="dobModel" [minDate]="minDateStruct"
+                     [maxDate]="{ year: 2032, month: 12, day: 31 }" required maxlength="10" minlength="10"
+                     [class.invalid]="date.status == 'INVALID'" />
+              <div class="input-group-append">
+                <button class="btn btn-outline-secondary clock" (click)="dateRef.toggle()" type="button">
+                  <i class="fa fa-calendar"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="form-group mt-4">
+          <label>Guests</label>
+          <div class="row">
+
+            <div class="col-sm-6 col-md-4 col-lg-3 p-2 cursor-pointer" *ngFor="let guest of guests">
+              <div [ngClass]="['badge', 'w-100', 'p-2', 'border','border-1','rounded', 'text-dark', isChecked($any(guest).id || guest) ? 'bg-success' : '']" (click)="onGuestsChanged($any(guest).id || guest)">
+                <h6 class="mb-0">{{guest.firstName + " " + guest.lastName}}</h6>
+                <br />
+                <span>{{guest.email}}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="form-row mt-4">
+          <button class="btn btn-primary m-1" type="submit" [disabled]="createForm.invalid">
+            Create
+          </button>
+          <button class="btn btn-secondary m-1" type="button" (click)="modal.close('Close click')">
+            Cancel
+          </button>
+        </div>
+      </form>
+        
+    </div>
+</ng-template>
+
+<!-- ================= Edit Modal ==========================  -->
+<ng-template #editContent let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title">Edit Event</h4>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+    </div>
+    <div class="modal-body">
+      <form novalidate autocomplete="off" #editForm="ngForm" (submit)="onUpdate()" class="container">
+        <div class="row">
+          <div class="form-group col-md-6 mt-4">
+            <label>Name</label>
+            <input class="form-control" placeholder="Name" name="name" #name="ngModel" [(ngModel)]="event.name" required
+                   [class.invalid]="name.invalid && name.touched" />
+          </div>
+          <div class="form-group col-md-6 mt-4">
+            <label>Date</label>
+            <div class="input-group">
+              <input class="form-control" placeholder="yyyy-mm-dd" name="date" [(ngModel)]="dobModel" ngbDatepicker
+                     #date="ngModel" #dateRef="ngbDatepicker" [startDate]="dobModel" [minDate]="minDateStruct"
+                     [maxDate]="{ year: 2032, month: 12, day: 31 }" required maxlength="10" minlength="10"
+                     [class.invalid]="date.status == 'INVALID'" />
+              <div class="input-group-append">
+                <button class="btn btn-outline-secondary clock" (click)="dateRef.toggle()" type="button">
+                  <i class="fa fa-calendar"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="form-group mt-4">
+          <label>Guests</label>
+          <div class="row">
+
+            <div class="col-sm-6 col-md-4 col-lg-3 p-2 cursor-pointer" *ngFor="let guest of guests">
+              <div [ngClass]="['badge', 'w-100', 'p-2', 'border','border-1','rounded', 'text-dark', isChecked($any(guest).id || guest) ? 'bg-success' : '']" (click)="onGuestsChanged($any(guest).id || guest)">
+                <h6 class="mb-0">{{guest.firstName + " " + guest.lastName}}</h6>
+                <br />
+                <span>{{guest.email}}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="form-row mt-4">
+          <button class="btn btn-primary m-1" type="submit" [disabled]="editForm.invalid">
+            Update
+          </button>
+          <button class="btn btn-secondary m-1" type="button" (click)="modal.close('Close click')">
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+</ng-template>
+
+<!-- ===================== End Edit Modal ==============================  -->
